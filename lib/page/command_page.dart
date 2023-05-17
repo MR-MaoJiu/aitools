@@ -55,9 +55,9 @@ class _CommandPageState extends State<CommandPage> {
   Widget command(index) {
     return ListTile(
       leading: CircleAvatar(
-        child: ExtendedImage.network(
-            'https://img5.arthub.ai/user-uploads/9f9f29e929e0b146b9e94240e26ece4de5058da6/e0067814-8d2a-4391-9520-38e4c38a3d68/ah3-b3276462caae.jpeg'),
+        backgroundImage: ExtendedNetworkImageProvider('https://img5.arthub.ai/user-uploads/9f9f29e929e0b146b9e94240e26ece4de5058da6/e0067814-8d2a-4391-9520-38e4c38a3d68/ah3-b3276462caae.jpeg'),
       ),
+
       title: Text('咒语名称：$index'),
       subtitle: Text('咒语描述：xxx,xxxx,xx,xxxxx,xx,xxxx'),
       trailing: SizedBox(

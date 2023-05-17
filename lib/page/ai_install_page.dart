@@ -68,9 +68,9 @@ class _AiInstallPageState extends State<AiInstallPage> {
   Widget app(index) {
     final downloadController = _downloadControllers[index];
     return ListTile(
+
       leading: CircleAvatar(
-        child: ExtendedImage.network(
-            'https://img5.arthub.ai/user-uploads/9f9f29e929e0b146b9e94240e26ece4de5058da6/e0067814-8d2a-4391-9520-38e4c38a3d68/ah3-b3276462caae.jpeg'),
+        backgroundImage: ExtendedNetworkImageProvider('https://img5.arthub.ai/user-uploads/cde0ae4800303678568d224f11505bb78f69ee15/404ac443-eb0d-4fda-9ce2-cb7d6de6186e/ah3-47346461d60e.jpeg'),
       ),
       title: Text('项目名称：Stable Diffusion+WebUI'),
       subtitle: Text(

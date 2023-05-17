@@ -24,7 +24,7 @@ class _MyAppState extends State<MyApp> {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Floating Tabbar',
+      title: 'AI Tools',
       debugShowCheckedModeBanner: false,
       themeMode: ThemeMode.system,
       theme: ThemeData(
@@ -33,7 +33,7 @@ class _MyAppState extends State<MyApp> {
         canvasColor: Colors.grey[50],
       ),
       darkTheme: ThemeData(
-        primaryColor: Colors.blue,
+        primaryColor: Colors.indigoAccent,
         brightness: Brightness.dark,
         canvasColor: const Color.fromARGB(255, 37, 37, 37),
       ),
@@ -72,7 +72,7 @@ class _HomeState extends State<Home> {
         TabItem(
           onTap: () {},
           selectedLeadingIcon: const Icon(Icons.egg),
-          title: const Text("基础环境安装"),
+          title: const Text("环境"),
           tab: const BaseEnvironmentInstall(),
         ),
         // TabItem(
@@ -98,8 +98,8 @@ class _HomeState extends State<Home> {
         TabItem(
           title: const Text("模型"),
           onTap: () {
-            Navigator.of(context).push(
-                MaterialPageRoute(builder: (context) => const ShowCase()));
+            // Navigator.of(context).push(
+            //     MaterialPageRoute(builder: (context) => const ShowCase()));
           },
           selectedLeadingIcon: const Icon(Icons.pets_outlined),
           tab: const Center(child: Text("关于", style: TextStyle(fontSize: 30))),
@@ -109,8 +109,9 @@ class _HomeState extends State<Home> {
     }
 
     return FloatingTabBar(
+
       children: tabList(),
-      useNautics: true,
+      // useNautics: true,
     );
   }
 
@@ -121,148 +122,3 @@ class _HomeState extends State<Home> {
   }
 }
 
-class ShowCase extends StatefulWidget {
-  const ShowCase({Key? key}) : super(key: key);
-
-  @override
-  State<ShowCase> createState() => _ShowCaseState();
-}
-
-class _ShowCaseState extends State<ShowCase> {
-  int selectedIndex = 0;
-  String text = "Text";
-  List<TabItem> nauticsItems() {
-    List<TabItem> nauticsItems = [
-      TabItem(
-        selectedLeadingIcon: const Icon(Icons.account_circle_rounded, size: 25),
-        trailingIcon: const Icon(Icons.arrow_forward_ios_rounded, size: 15),
-        title: const Text("Jason Bourne"),
-        subTitle: const Text("Associate"),
-        onTap: () => setState(() {
-          text = "Jason Bourne";
-        }),
-      ),
-      TabItem(
-        selectedLeadingIcon: const Icon(Icons.toggle_on_outlined),
-        onTap: () => setState(() {
-          text = "Status";
-        }),
-        title: const Text("Status"),
-        children: [
-          TabItem(
-            title: const Text("Appear offline"),
-            selectedLeadingIcon:
-                const Icon(CupertinoIcons.multiply_circle, color: Colors.grey),
-            onTap: () => setState(() {
-              text = "Appear offline";
-            }),
-          ),
-          TabItem(
-            title: const Text("Available"),
-            selectedLeadingIcon: const Icon(Icons.done_rounded,
-                color: Color.fromARGB(255, 0, 254, 8)),
-            onTap: () => setState(() {
-              text = "Available";
-            }),
-          ),
-          TabItem(
-            title: const Text("Busy"),
-            selectedLeadingIcon: const Icon(Icons.circle, color: Colors.red),
-            onTap: () => setState(() {
-              text = "Busy";
-            }),
-          ),
-          TabItem(
-            title: const Text("Do not disturb"),
-            selectedLeadingIcon:
-                const Icon(Icons.remove_circle, color: Colors.red),
-            onTap: () => setState(() {
-              text = "Do not disturb";
-            }),
-          ),
-          TabItem(
-            title: const Text("Be right back"),
-            selectedLeadingIcon:
-                const Icon(Icons.watch_later_rounded, color: Colors.amber),
-            onTap: () => setState(() {
-              text = "Be right back";
-            }),
-          ),
-          TabItem(
-            title: const Text("Away"),
-            selectedLeadingIcon:
-                const Icon(Icons.watch_later_rounded, color: Colors.amber),
-            onTap: () => setState(() {
-              text = "Away";
-            }),
-          ),
-          TabItem(
-            title: const Text("Reset status"),
-            selectedLeadingIcon: const Icon(CupertinoIcons.arrow_2_circlepath),
-            onTap: () => setState(() {
-              text = "Reset status";
-            }),
-          ),
-        ],
-      ),
-      TabItem(
-        selectedLeadingIcon: const Icon(CupertinoIcons.pencil_outline),
-        onTap: () => setState(() {
-          text = "Set status message";
-        }),
-        title: const Text("Set status message"),
-      ),
-      TabItem(
-        selectedLeadingIcon: const Icon(Icons.notifications),
-        title: const Text("Notifications"),
-        subTitle: const Text("On"),
-        onTap: () => setState(() {
-          text = "Notifications";
-        }),
-      ),
-      TabItem(
-        selectedLeadingIcon: const Icon(Icons.settings),
-        title: const Text("Setting"),
-        onTap: () => setState(() {
-          text = "Setting";
-        }),
-      ),
-      TabItem(
-        selectedLeadingIcon: const Icon(Icons.lightbulb_outline_rounded),
-        title: const Text("What's new"),
-        onTap: () => setState(() {
-          text = "What's new";
-        }),
-      ),
-      TabItem(
-        selectedLeadingIcon: const Icon(Icons.add_rounded),
-        title: const Text("Add account"),
-        onTap: () => setState(() {
-          text = "Add account";
-        }),
-      ),
-    ];
-    return nauticsItems;
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text("Nautics Side Bar Example"),
-        centerTitle: true,
-        elevation: 0,
-      ),
-      body: Row(
-        children: [
-          Nautics(
-            onChange: (index) => setState(() => selectedIndex = index),
-            initialIndex: selectedIndex,
-            children: nauticsItems(),
-          ),
-          Expanded(child: Center(child: Text("$text on index $selectedIndex"))),
-        ],
-      ),
-    );
-  }
-}

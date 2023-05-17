@@ -75,9 +75,9 @@ class _ModelsPageState extends State<ModelsPage> {
     final downloadController = _downloadControllers[index];
     return ListTile(
       leading: CircleAvatar(
-        child: ExtendedImage.network(
-            'https://img5.arthub.ai/user-uploads/cde0ae4800303678568d224f11505bb78f69ee15/9fcbd6da-350d-4086-a094-be01c6b2e672/ah3-67e96463ea7a.jpeg'),
+        backgroundImage: ExtendedNetworkImageProvider('https://img5.arthub.ai/user-uploads/cde0ae4800303678568d224f11505bb78f69ee15/9fcbd6da-350d-4086-a094-be01c6b2e672/ah3-67e96463ea7a.jpeg'),
       ),
+
       title: Text('模型名称：$index'),
       subtitle: Text('描述：这是一个很厉害的模型，该模型版本主要是基于xxxx模型训练的'),
       trailing: SizedBox(
