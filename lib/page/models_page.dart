@@ -36,32 +36,39 @@ class _ModelsPageState extends State<ModelsPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+        floatingActionButton: Container(
+          margin: EdgeInsets.only(bottom: 80),
+          child: FloatingActionButton(
+            onPressed: () {},
+            child: Icon(Icons.add),
+          ),
+        ),
         body: CustomScrollView(
-      slivers: List.generate(
-          1,
-          (index) => SliverStickyHeader.builder(
-                builder: (context, state) => GestureDetector(
-                  onTap: () {},
-                  child: Container(
-                    height: 60,
-                    color: ColorUtils.getRandomColor(),
-                    padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                    alignment: Alignment.centerLeft,
-                    child: Text(
-                      'Stable Diffusion',
-                      style: const TextStyle(color: Colors.white),
+          slivers: List.generate(
+              1,
+              (index) => SliverStickyHeader.builder(
+                    builder: (context, state) => GestureDetector(
+                      onTap: () {},
+                      child: Container(
+                        height: 60,
+                        color: ColorUtils.getRandomColor(),
+                        padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                        alignment: Alignment.centerLeft,
+                        child: Text(
+                          'Stable Diffusion',
+                          style: const TextStyle(color: Colors.white),
+                        ),
+                      ),
                     ),
-                  ),
-                ),
-                sliver: SliverList(
-                  delegate: SliverChildBuilderDelegate(
-                    (context, i) => models(i),
-                    childCount: 20,
-                  ),
-                ),
-              )),
-      reverse: false,
-    ));
+                    sliver: SliverList(
+                      delegate: SliverChildBuilderDelegate(
+                        (context, i) => models(i),
+                        childCount: 20,
+                      ),
+                    ),
+                  )),
+          reverse: false,
+        ));
   }
 
   Widget models(index) {
