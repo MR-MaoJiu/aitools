@@ -1,12 +1,11 @@
 import 'package:aitools/page/ai_install_page.dart';
+import 'package:aitools/page/app_page.dart';
 import 'package:aitools/page/base_environment_install.dart';
 import 'package:aitools/page/command_page.dart';
 import 'package:aitools/page/models_page.dart';
 import 'package:floating_tabbar/Models/tab_item.dart';
-import 'package:floating_tabbar/Widgets/nautics.dart';
 import 'package:floating_tabbar/Widgets/top_tabbar.dart';
 import 'package:floating_tabbar/floating_tabbar.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 void main() {
@@ -54,6 +53,11 @@ class _HomeState extends State<Home> {
     List<TabItem> topTabbarTabItemlist = [
       TabItem(
         onTap: () {},
+        title: const Text("应用"),
+        tab: const AiInstallPage(),
+      ),
+      TabItem(
+        onTap: () {},
         title: const Text("模型"),
         tab: const ModelsPage(),
       ),
@@ -84,8 +88,8 @@ class _HomeState extends State<Home> {
         TabItem(
           onTap: () {},
           selectedLeadingIcon: const Icon(Icons.dashboard),
-          title: const Text("部署"),
-          tab: const AiInstallPage(),
+          title: const Text("应用"),
+          tab: const AppPage(),
         ),
         TabItem(
           title: const Text("商店"),
@@ -109,7 +113,6 @@ class _HomeState extends State<Home> {
     }
 
     return FloatingTabBar(
-
       children: tabList(),
       // useNautics: true,
     );
@@ -121,4 +124,3 @@ class _HomeState extends State<Home> {
     return floatingTabBarPageView(brightness: brightness);
   }
 }
-

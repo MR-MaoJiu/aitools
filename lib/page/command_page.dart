@@ -17,47 +17,47 @@ class _CommandPageState extends State<CommandPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        floatingActionButton: Container(
-          margin: EdgeInsets.only(bottom: 80),
-          child: FloatingActionButton(
-            onPressed: () {},
-            child: Icon(Icons.add),
-          ),
-        ),
+        // floatingActionButton: Container(
+        //   margin: EdgeInsets.only(bottom: 80),
+        //   child: FloatingActionButton(
+        //     onPressed: () {},
+        //     child: Icon(Icons.add),
+        //   ),
+        // ),
         body: CustomScrollView(
-          slivers: List.generate(
-              1,
-              (index) => SliverStickyHeader.builder(
-                    builder: (context, state) => GestureDetector(
-                      onTap: () {},
-                      child: Container(
-                        height: 60,
-                        color: ColorUtils.getRandomColor(),
-                        padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                        alignment: Alignment.centerLeft,
-                        child: Text(
-                          'Stable Diffusion',
-                          style: const TextStyle(color: Colors.white),
-                        ),
-                      ),
+      slivers: List.generate(
+          1,
+          (index) => SliverStickyHeader.builder(
+                builder: (context, state) => GestureDetector(
+                  onTap: () {},
+                  child: Container(
+                    height: 60,
+                    color: ColorUtils.getRandomColor(),
+                    padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                    alignment: Alignment.centerLeft,
+                    child: Text(
+                      'Stable Diffusion',
+                      style: const TextStyle(color: Colors.white),
                     ),
-                    sliver: SliverList(
-                      delegate: SliverChildBuilderDelegate(
-                        (context, i) => command(i),
-                        childCount: 20,
-                      ),
-                    ),
-                  )),
-          reverse: false,
-        ));
+                  ),
+                ),
+                sliver: SliverList(
+                  delegate: SliverChildBuilderDelegate(
+                    (context, i) => _commandWidget(i),
+                    childCount: 20,
+                  ),
+                ),
+              )),
+      reverse: false,
+    ));
   }
 
-  Widget command(index) {
+  Widget _commandWidget(index) {
     return ListTile(
       leading: CircleAvatar(
-        backgroundImage: ExtendedNetworkImageProvider('https://img5.arthub.ai/user-uploads/9f9f29e929e0b146b9e94240e26ece4de5058da6/e0067814-8d2a-4391-9520-38e4c38a3d68/ah3-b3276462caae.jpeg'),
+        backgroundImage: ExtendedNetworkImageProvider(
+            'https://pic4.zhimg.com/80/v2-40ededbfefa214151502f06b18fbb57f_720w.webp'),
       ),
-
       title: Text('咒语名称：$index'),
       subtitle: Text('咒语描述：xxx,xxxx,xx,xxxxx,xx,xxxx'),
       trailing: SizedBox(

@@ -1,5 +1,12 @@
+import 'dart:async';
+import 'dart:io';
+
+import 'package:dio/dio.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:path/path.dart' as path;
+import 'package:path_provider/path_provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 enum DownloadStatus {
   notDownloaded,
@@ -11,20 +18,29 @@ enum DownloadStatus {
 abstract class DownloadController implements ChangeNotifier {
   DownloadStatus get downloadStatus;
   double get progress;
-
+  String get downloadUrl;
+  String get downloadName;
   void startDownload();
   void stopDownload();
   void openDownload();
 }
+
+/// count 当前下载进度
+/// total 下载总长度
+typedef DownloadProgressCallBack = Function(int count, int total);
 
 class SimulatedDownloadController extends DownloadController
     with ChangeNotifier {
   SimulatedDownloadController({
     DownloadStatus downloadStatus = DownloadStatus.notDownloaded,
     double progress = 0.0,
+    required String downloadUrl,
+    required String downloadName,
     required VoidCallback onOpenDownload,
   })  : _downloadStatus = downloadStatus,
         _progress = progress,
+        _downloadUrl = downloadUrl,
+        _downloadName = downloadName,
         _onOpenDownload = onOpenDownload;
 
   DownloadStatus _downloadStatus;
@@ -32,8 +48,15 @@ class SimulatedDownloadController extends DownloadController
   DownloadStatus get downloadStatus => _downloadStatus;
 
   double _progress;
+  String _downloadUrl;
+  String _downloadName;
   @override
   double get progress => _progress;
+
+  @override
+  String get downloadUrl => _downloadUrl;
+  @override
+  String get downloadName => _downloadName;
 
   final VoidCallback _onOpenDownload;
 
@@ -42,7 +65,7 @@ class SimulatedDownloadController extends DownloadController
   @override
   void startDownload() {
     if (downloadStatus == DownloadStatus.notDownloaded) {
-      _doSimulatedDownload();
+      _doDownload();
     }
   }
 
@@ -52,6 +75,8 @@ class SimulatedDownloadController extends DownloadController
       _isDownloading = false;
       _downloadStatus = DownloadStatus.notDownloaded;
       _progress = 0.0;
+      _downloadUrl = '';
+      _downloadName = '';
       notifyListeners();
     }
   }
@@ -63,16 +88,33 @@ class SimulatedDownloadController extends DownloadController
     }
   }
 
-  Future<void> _doSimulatedDownload() async {
+  @override
+  Future<DownloadStatus> getDownloadStatus() async {
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    if (prefs.getBool(_downloadName) ?? false) {
+      _downloadStatus = DownloadStatus.downloaded;
+    }
+    return _downloadStatus;
+  }
+
+  ///下载文件到本地
+  ///urlPath 文件Url
+  ///savePath 本地保存位置
+  ///downloadProgressCallBack 下载文件回调
+  static Future<Response> _downloadFile(String urlPath, String savePath,
+      {DownloadProgressCallBack? downloadProgressCallBack}) async {
+    Dio dio = Dio();
+    return await dio.download(urlPath, savePath,
+        onReceiveProgress: downloadProgressCallBack);
+  }
+
+  Future<void> _doDownload() async {
     _isDownloading = true;
     _downloadStatus = DownloadStatus.fetchingDownload;
     notifyListeners();
-    //TODO:下载操作
-    // Wait a second to simulate fetch time.
-    await Future<void>.delayed(const Duration(seconds: 1));
-    // final Directory appDocumentsDir = await getApplicationDocumentsDirectory();
-    // final SharedPreferences prefs = await SharedPreferences.getInstance();
-    // If the user chose to cancel the download, stop the simulation.
+    print(_downloadUrl);
+    print(_downloadName);
+    final Directory appDocumentsDir = await getApplicationDocumentsDirectory();
     if (!_isDownloading) {
       return;
     }
@@ -80,34 +122,64 @@ class SimulatedDownloadController extends DownloadController
     // Shift to the downloading phase.
     _downloadStatus = DownloadStatus.downloading;
     notifyListeners();
-
-    const downloadProgressStops = [0.0, 0.15, 0.45, 0.8, 1.0];
-    for (final stop in downloadProgressStops) {
-      // Wait a second to simulate varying download speeds.
-      await Future<void>.delayed(const Duration(seconds: 1));
-
-      // If the user chose to cancel the download, stop the simulation.
-      if (!_isDownloading) {
-        return;
-      }
-
-      // Update the download progress.
-      _progress = stop;
+    File file =
+        File('$appDocumentsDir/$_downloadName/${path.basename(downloadUrl)}');
+    if (file.existsSync()) {
+      _downloadStatus = DownloadStatus.downloaded;
       notifyListeners();
+    } else {
+      _downloadFile(_downloadUrl,
+          '$appDocumentsDir/$_downloadName/${path.basename(downloadUrl)}',
+          downloadProgressCallBack: (int count, int total) async {
+        _progress = count / total;
+        notifyListeners();
+        if (_progress == 1) {
+          _downloadStatus = DownloadStatus.downloaded;
+          _isDownloading = false;
+          final SharedPreferences prefs = await SharedPreferences.getInstance();
+          prefs.setBool(_downloadName, true);
+          notifyListeners();
+        }
+      });
     }
 
-    // Wait a second to simulate a final delay.
-    await Future<void>.delayed(const Duration(seconds: 1));
-
+    // final SharedPreferences prefs = await SharedPreferences.getInstance();
     // If the user chose to cancel the download, stop the simulation.
-    if (!_isDownloading) {
-      return;
-    }
+    // if (!_isDownloading) {
+    //   return;
+    // }
+    //
+    // // Shift to the downloading phase.
+    // _downloadStatus = DownloadStatus.downloading;
+    // notifyListeners();
 
-    // Shift to the downloaded state, completing the simulation.
-    _downloadStatus = DownloadStatus.downloaded;
-    _isDownloading = false;
-    notifyListeners();
+    // const downloadProgressStops = [0.0, 0.15, 0.45, 0.8, 1.0];
+    // for (final stop in downloadProgressStops) {
+    //   // Wait a second to simulate varying download speeds.
+    //   await Future<void>.delayed(const Duration(seconds: 1));
+    //
+    //   // If the user chose to cancel the download, stop the simulation.
+    //   if (!_isDownloading) {
+    //     return;
+    //   }
+    //
+    //   // Update the download progress.
+    //   _progress = stop;
+    //   notifyListeners();
+    // }
+
+    // // Wait a second to simulate a final delay.
+    // await Future<void>.delayed(const Duration(seconds: 1));
+    //
+    // // If the user chose to cancel the download, stop the simulation.
+    // if (!_isDownloading) {
+    //   return;
+    // }
+    //
+    // // Shift to the downloaded state, completing the simulation.
+    // _downloadStatus = DownloadStatus.downloaded;
+    // _isDownloading = false;
+    // notifyListeners();
   }
 }
 
@@ -121,6 +193,8 @@ class DownloadButton extends StatelessWidget {
     required this.onCancel,
     required this.onOpen,
     this.transitionDuration = const Duration(milliseconds: 500),
+    this.buttonSt,
+    this.buttonEn,
   });
 
   final DownloadStatus status;
@@ -129,7 +203,8 @@ class DownloadButton extends StatelessWidget {
   final VoidCallback onCancel;
   final VoidCallback onOpen;
   final Duration transitionDuration;
-
+  final String? buttonSt;
+  final String? buttonEn;
   bool get _isDownloading => status == DownloadStatus.downloading;
 
   bool get _isFetching => status == DownloadStatus.fetchingDownload;
@@ -164,6 +239,8 @@ class DownloadButton extends StatelessWidget {
             isDownloaded: _isDownloaded,
             isDownloading: _isDownloading,
             isFetching: _isFetching,
+            buttonSt: buttonSt,
+            buttonEn: buttonEn,
           ),
           Positioned.fill(
             child: AnimatedOpacity(
@@ -202,12 +279,16 @@ class ButtonShapeWidget extends StatelessWidget {
     required this.isDownloaded,
     required this.isFetching,
     required this.transitionDuration,
+    this.buttonSt,
+    this.buttonEn,
   });
 
   final bool isDownloading;
   final bool isDownloaded;
   final bool isFetching;
   final Duration transitionDuration;
+  final String? buttonSt;
+  final String? buttonEn;
 
   @override
   Widget build(BuildContext context) {
@@ -235,7 +316,7 @@ class ButtonShapeWidget extends StatelessWidget {
           opacity: isDownloading || isFetching ? 0.0 : 1.0,
           curve: Curves.ease,
           child: Text(
-            isDownloaded ? '查看' : '下载',
+            isDownloaded ? buttonEn ?? '查看' : buttonSt ?? '下载',
             textAlign: TextAlign.center,
             style: Theme.of(context).textTheme.labelLarge?.copyWith(
                   fontWeight: FontWeight.bold,

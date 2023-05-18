@@ -45,6 +45,7 @@ dependencies:
   path_provider: ^2.0.15
   shared_preferences: ^2.1.1
   dio: ^5.1.2
+  open_document: ^1.0.6+2
 dev_dependencies:
   flutter_test:
     sdk: flutter
