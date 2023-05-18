@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:aitools/page/ai_install_page.dart';
 import 'package:aitools/page/app_page.dart';
 import 'package:aitools/page/base_environment_install.dart';
@@ -7,11 +9,16 @@ import 'package:floating_tabbar/Models/tab_item.dart';
 import 'package:floating_tabbar/Widgets/top_tabbar.dart';
 import 'package:floating_tabbar/floating_tabbar.dart';
 import 'package:flutter/material.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
-void main() {
+Future<void> main() async {
+  prefs = await SharedPreferences.getInstance();
+   appDocumentsDir = await getApplicationDocumentsDirectory();
   runApp(const MyApp());
 }
-
+late SharedPreferences prefs;
+late Directory appDocumentsDir ;
 class MyApp extends StatefulWidget {
   const MyApp({Key? key}) : super(key: key);
 
@@ -123,4 +130,5 @@ class _HomeState extends State<Home> {
     Brightness brightness = MediaQuery.of(context).platformBrightness;
     return floatingTabBarPageView(brightness: brightness);
   }
+
 }

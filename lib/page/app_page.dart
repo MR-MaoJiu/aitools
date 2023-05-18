@@ -1,7 +1,12 @@
+import 'dart:convert';
+import 'dart:io';
+
 import 'package:extended_image/extended_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_sticky_header/flutter_sticky_header.dart';
-
+import 'package:open_document/open_document.dart';
+import 'package:path/path.dart' as path;
+import '../main.dart';
 import '../utils/ColorUtils.dart';
 
 class AppPage extends StatefulWidget {
@@ -11,14 +16,32 @@ class AppPage extends StatefulWidget {
   State<AppPage> createState() => _AppPageState();
 }
 
-class _AppPageState extends State<AppPage> {
+class _AppPageState extends State<AppPage> with AutomaticKeepAliveClientMixin{
+  late Map<String,dynamic>appJson={};
+  String appData= prefs.getString("app")??'';
+  List dataList = [];
+  getData(){
+    if(appData.isNotEmpty){
+      appJson=json.decode(appData);
+      print(appJson);
+    }
+    setState(() {
+      dataList = appJson['data'];
+    });
+  }
+  @override
+  void initState() {
+    super.initState();
+    getData();
+
+  }
   @override
   Widget build(BuildContext context) {
     return Scaffold(
         body: CustomScrollView(
-      slivers: List.generate(
-          1,
-          (index) => SliverStickyHeader.builder(
+          slivers: List.generate(
+              dataList.length,
+                  (index) => SliverStickyHeader.builder(
                 builder: (context, state) => GestureDetector(
                   onTap: () {},
                   child: Container(
@@ -26,31 +49,30 @@ class _AppPageState extends State<AppPage> {
                     color: ColorUtils.getRandomColor(),
                     padding: const EdgeInsets.symmetric(horizontal: 16.0),
                     alignment: Alignment.centerLeft,
-                    child: const Text(
-                      '图片相关',
-                      style: TextStyle(color: Colors.white),
+                    child: Text(
+                      dataList[index]['type'],
+                      style: const TextStyle(color: Colors.white),
                     ),
                   ),
                 ),
                 sliver: SliverList(
                   delegate: SliverChildBuilderDelegate(
-                    (context, i) => _appWidget(i),
-                    childCount: 20,
+                        (context, i) => _appWidget(i, dataList[index]['list']),
+                    childCount: dataList[index]['list'].length,
                   ),
                 ),
               )),
-      reverse: false,
-    ));
+          reverse: false,
+        ));
   }
 
-  Widget _appWidget(index) {
+  Widget _appWidget(index,_dataList) {
     return ListTile(
       leading: CircleAvatar(
-        backgroundImage: ExtendedNetworkImageProvider(
-            'https://pic4.zhimg.com/80/v2-40ededbfefa214151502f06b18fbb57f_720w.webp'),
+        backgroundImage: ExtendedNetworkImageProvider(_dataList[index]['icon']),
       ),
-      title: Text('咒语名称：$index'),
-      subtitle: Text('咒语描述：xxx,xxxx,xx,xxxxx,xx,xxxx'),
+      title: Text(_dataList[index]['name']),
+      subtitle: Text(_dataList[index]['desc']),
       trailing: SizedBox(
         width: 96,
         child: MaterialButton(
@@ -70,7 +92,21 @@ class _AppPageState extends State<AppPage> {
           ),
 
           //点击事件
-          onPressed: () {},
+          onPressed: () {
+            print('${_dataList[index]['url']}/webui-user.bat');
+
+            Process.start('cmd.exe',['/c', '${_dataList[index]['url']}/webui.bat'], runInShell: true).then((Process process) {
+              process.stdout.transform(const SystemEncoding().decoder).listen((data) {
+                print(data);
+              });
+            });
+
+            // Process.run('cmd.exe', ['/c', '${_dataList[index]['url']}/webui.bat'],).then((ProcessResult results) {
+            //   print('============>${results.stdout}');
+            // });
+
+
+          },
           child: const Text(
             "启动",
             style: TextStyle(color: Colors.blue),
@@ -79,4 +115,8 @@ class _AppPageState extends State<AppPage> {
       ),
     );
   }
+
+  @override
+  // TODO: implement wantKeepAlive
+  bool get wantKeepAlive => true;
 }

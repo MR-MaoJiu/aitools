@@ -12,7 +12,7 @@ class ModelsPage extends StatefulWidget {
   State<ModelsPage> createState() => _ModelsPageState();
 }
 
-class _ModelsPageState extends State<ModelsPage> {
+class _ModelsPageState extends State<ModelsPage>with AutomaticKeepAliveClientMixin {
   late final List<DownloadController> _downloadControllers;
   @override
   void initState() {
@@ -100,4 +100,8 @@ class _ModelsPageState extends State<ModelsPage> {
       ),
     );
   }
+
+  @override
+  // TODO: implement wantKeepAlive
+  bool get wantKeepAlive => true;
 }

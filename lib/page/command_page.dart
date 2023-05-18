@@ -13,7 +13,7 @@ class CommandPage extends StatefulWidget {
   State<CommandPage> createState() => _CommandPageState();
 }
 
-class _CommandPageState extends State<CommandPage> {
+class _CommandPageState extends State<CommandPage> with AutomaticKeepAliveClientMixin{
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -99,4 +99,8 @@ class _CommandPageState extends State<CommandPage> {
       ),
     );
   }
+
+  @override
+  // TODO: implement wantKeepAlive
+  bool get wantKeepAlive => true;
 }

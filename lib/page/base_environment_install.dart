@@ -4,11 +4,9 @@ import 'package:extended_image/extended_image.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:open_document/open_document.dart';
-import 'package:path/path.dart' as path;
-import 'package:path_provider/path_provider.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:url_launcher/url_launcher.dart';
 
+import '../main.dart';
 import '../widget/DownloadButton.dart';
 
 class BaseEnvironmentInstall extends StatefulWidget {
@@ -18,14 +16,13 @@ class BaseEnvironmentInstall extends StatefulWidget {
   State<BaseEnvironmentInstall> createState() => _BaseEnvironmentInstallState();
 }
 
-class _BaseEnvironmentInstallState extends State<BaseEnvironmentInstall> {
+class _BaseEnvironmentInstallState extends State<BaseEnvironmentInstall>with AutomaticKeepAliveClientMixin {
   late final List<DownloadController> _downloadControllers;
   String printStr = '如安装过程有问题，请联系lovemaojiu@gmail.com';
   String buttonStr = '安装';
-  late SharedPreferences prefs;
 
+  var en;
   getPrefs() async {
-    prefs = await SharedPreferences.getInstance();
     setState(() {
       buttonStr = prefs.getString('OneClickInstall') ?? '安装';
     });
@@ -35,7 +32,7 @@ class _BaseEnvironmentInstallState extends State<BaseEnvironmentInstall> {
   void initState() {
     super.initState();
     getPrefs();
-    var en = [
+     en = [
       {
         "name": "git",
         "url": Platform.isWindows
@@ -61,12 +58,10 @@ class _BaseEnvironmentInstallState extends State<BaseEnvironmentInstall> {
     _downloadControllers = List<DownloadController>.generate(
       3,
       (index) => SimulatedDownloadController(
-          onOpenDownload: () async {
-            final Directory appDocumentsDir =
-                await getApplicationDocumentsDirectory();
+          onOpenDownload: ()  {
             OpenDocument.openDocument(
                 filePath:
-                    '$appDocumentsDir/${en[index]['name']!}/${path.basename(en[index]['url']!)}');
+                    '${appDocumentsDir.path}/AiTools/${en[index]['name']!}/');
           },
           downloadUrl: en[index]['url']!,
           downloadName: en[index]['name']!)
@@ -106,6 +101,7 @@ class _BaseEnvironmentInstallState extends State<BaseEnvironmentInstall> {
                         onDownload: _downloadControllers[0].startDownload,
                         onCancel: _downloadControllers[0].stopDownload,
                         onOpen: _downloadControllers[0].openDownload,
+                        // buttonSt: (prefs.getBool(en[0]['name'])??false)?"查看":"下載",
                       );
                     },
                   ),
@@ -147,14 +143,14 @@ class _BaseEnvironmentInstallState extends State<BaseEnvironmentInstall> {
                   trailing: SizedBox(
                     width: 96,
                     child: AnimatedBuilder(
-                      animation: _downloadControllers[1],
+                      animation: _downloadControllers[2],
                       builder: (context, child) {
                         return DownloadButton(
-                          status: _downloadControllers[1].downloadStatus,
-                          downloadProgress: _downloadControllers[1].progress,
-                          onDownload: _downloadControllers[1].startDownload,
-                          onCancel: _downloadControllers[1].stopDownload,
-                          onOpen: _downloadControllers[1].openDownload,
+                          status: _downloadControllers[2].downloadStatus,
+                          downloadProgress: _downloadControllers[2].progress,
+                          onDownload: _downloadControllers[2].startDownload,
+                          onCancel: _downloadControllers[2].stopDownload,
+                          onOpen: _downloadControllers[2].openDownload,
                         );
                       },
                     ),
@@ -402,8 +398,7 @@ class _BaseEnvironmentInstallState extends State<BaseEnvironmentInstall> {
         });
       }
     });
-
-    prefs.setString('OneClickInstall', buttonStr);
+    prefs.setString('OneClickInstall', '已完成');
     // print('正在创建虚拟环境（需要一点时间，请耐心等待）...\n\n');
     //
     // Process.run('py', ['-3.10', '-m', 'venv', 'venv']).then((result) {
@@ -423,4 +418,8 @@ class _BaseEnvironmentInstallState extends State<BaseEnvironmentInstall> {
     //   });
     // });
   }
+
+  @override
+  // TODO: implement wantKeepAlive
+  bool get wantKeepAlive => true;
 }

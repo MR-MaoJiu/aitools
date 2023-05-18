@@ -5,8 +5,9 @@ import 'package:dio/dio.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:path/path.dart' as path;
-import 'package:path_provider/path_provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+
+import '../main.dart';
 
 enum DownloadStatus {
   notDownloaded,
@@ -89,8 +90,7 @@ class SimulatedDownloadController extends DownloadController
   }
 
   @override
-  Future<DownloadStatus> getDownloadStatus() async {
-    final SharedPreferences prefs = await SharedPreferences.getInstance();
+  DownloadStatus getDownloadStatus()  {
     if (prefs.getBool(_downloadName) ?? false) {
       _downloadStatus = DownloadStatus.downloaded;
     }
@@ -114,7 +114,6 @@ class SimulatedDownloadController extends DownloadController
     notifyListeners();
     print(_downloadUrl);
     print(_downloadName);
-    final Directory appDocumentsDir = await getApplicationDocumentsDirectory();
     if (!_isDownloading) {
       return;
     }
@@ -123,13 +122,13 @@ class SimulatedDownloadController extends DownloadController
     _downloadStatus = DownloadStatus.downloading;
     notifyListeners();
     File file =
-        File('$appDocumentsDir/$_downloadName/${path.basename(downloadUrl)}');
+        File('${appDocumentsDir.path}/AiTools/$_downloadName/${path.basename(downloadUrl)}');
     if (file.existsSync()) {
       _downloadStatus = DownloadStatus.downloaded;
       notifyListeners();
     } else {
       _downloadFile(_downloadUrl,
-          '$appDocumentsDir/$_downloadName/${path.basename(downloadUrl)}',
+          '${appDocumentsDir.path}/AiTools/$_downloadName/${path.basename(downloadUrl)}',
           downloadProgressCallBack: (int count, int total) async {
         _progress = count / total;
         notifyListeners();
@@ -303,7 +302,6 @@ class ButtonShapeWidget extends StatelessWidget {
         color: Colors.white.withOpacity(0),
       );
     }
-
     return AnimatedContainer(
       duration: transitionDuration,
       curve: Curves.ease,
