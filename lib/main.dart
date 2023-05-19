@@ -13,12 +13,15 @@ import 'package:path_provider/path_provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
   prefs = await SharedPreferences.getInstance();
-   appDocumentsDir = await getApplicationDocumentsDirectory();
+  appDocumentsDir = await getApplicationDocumentsDirectory();
   runApp(const MyApp());
 }
+
 late SharedPreferences prefs;
-late Directory appDocumentsDir ;
+late Directory appDocumentsDir;
+
 class MyApp extends StatefulWidget {
   const MyApp({Key? key}) : super(key: key);
 
@@ -130,5 +133,4 @@ class _HomeState extends State<Home> {
     Brightness brightness = MediaQuery.of(context).platformBrightness;
     return floatingTabBarPageView(brightness: brightness);
   }
-
 }

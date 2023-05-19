@@ -16,7 +16,8 @@ class BaseEnvironmentInstall extends StatefulWidget {
   State<BaseEnvironmentInstall> createState() => _BaseEnvironmentInstallState();
 }
 
-class _BaseEnvironmentInstallState extends State<BaseEnvironmentInstall>with AutomaticKeepAliveClientMixin {
+class _BaseEnvironmentInstallState extends State<BaseEnvironmentInstall>
+    with AutomaticKeepAliveClientMixin {
   late final List<DownloadController> _downloadControllers;
   String printStr = '如安装过程有问题，请联系lovemaojiu@gmail.com';
   String buttonStr = '安装';
@@ -32,7 +33,7 @@ class _BaseEnvironmentInstallState extends State<BaseEnvironmentInstall>with Aut
   void initState() {
     super.initState();
     getPrefs();
-     en = [
+    en = [
       {
         "name": "git",
         "url": Platform.isWindows
@@ -58,7 +59,7 @@ class _BaseEnvironmentInstallState extends State<BaseEnvironmentInstall>with Aut
     _downloadControllers = List<DownloadController>.generate(
       3,
       (index) => SimulatedDownloadController(
-          onOpenDownload: ()  {
+          onOpenDownload: () {
             OpenDocument.openDocument(
                 filePath:
                     '${appDocumentsDir.path}/AiTools/${en[index]['name']!}/');
@@ -156,11 +157,11 @@ class _BaseEnvironmentInstallState extends State<BaseEnvironmentInstall>with Aut
                     ),
                   ),
                 ),
-              if (Platform.isLinux)
+              if (Platform.isLinux || Platform.isMacOS)
                 ListTile(
                   leading: CircleAvatar(
                     backgroundImage: ExtendedNetworkImageProvider(
-                        'https://image.civitai.com/xG1nkqKTMzGDvpLrqFT7WA/f39bbb06-3d4b-40cf-36ef-0abac596a000/width=450/375791.jpeg'),
+                        'https://www.nvidia.cn/content/dam/en-zz/Solutions/about-nvidia/logo-and-brand/02-nvidia-logo-color-blk-500x200-4c25-d.png'),
                   ),
                   title: Text('CUDA Toolkit安装'),
                   subtitle: Text(
@@ -189,7 +190,7 @@ class _BaseEnvironmentInstallState extends State<BaseEnvironmentInstall>with Aut
                             'https://developer.nvidia.com/cuda-11-7-1-download-archive?target_os=Linux&target_arch=x86_64'));
                       },
                       child: const Text(
-                        "跳转",
+                        "查看",
                         style: TextStyle(color: Colors.blue),
                       ),
                     ),
@@ -272,6 +273,51 @@ class _BaseEnvironmentInstallState extends State<BaseEnvironmentInstall>with Aut
                     ),
                   ),
                 ),
+              ListTile(
+                leading: CircleAvatar(
+                  backgroundImage: ExtendedNetworkImageProvider(
+                      'https://www.nvidia.cn/content/dam/en-zz/Solutions/about-nvidia/logo-and-brand/02-nvidia-logo-color-blk-500x200-4c25-d.png'),
+                ),
+                title: Text('是否启用CUDA'),
+                subtitle: Text(
+                    'CUDA是一种由NVIDIA公司开发的并行计算平台和编程模型,它可以利用GPU进行高效的并行计算，如果您的设备没有安装请关闭此选项'),
+                trailing: SizedBox(
+                  width: 96,
+                  child: MaterialButton(
+                    //背景颜色
+                    // color: Colors.white,
+                    //边框样式
+                    shape: RoundedRectangleBorder(
+                      //边框颜色
+                      side: BorderSide(
+                        color: (prefs.getBool('CUDA') ?? false)
+                            ? Colors.blue
+                            : Colors.red,
+                        width: 1,
+                      ),
+                      //边框圆角
+                      borderRadius: const BorderRadius.all(
+                        Radius.circular(16),
+                      ),
+                    ),
+
+                    //点击事件
+                    onPressed: () {
+                      setState(() {
+                        prefs.setBool(
+                            'CUDA', !(prefs.getBool('CUDA') ?? false));
+                      });
+                    },
+                    child: Text(
+                      (prefs.getBool('CUDA') ?? false) ? "开启中" : "已关闭",
+                      style: TextStyle(
+                          color: (prefs.getBool('CUDA') ?? false)
+                              ? Colors.blue
+                              : Colors.red),
+                    ),
+                  ),
+                ),
+              ),
             ],
           );
   }
