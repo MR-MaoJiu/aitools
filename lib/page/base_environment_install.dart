@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:extended_image/extended_image.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:motion_toast/motion_toast.dart';
 import 'package:open_document/open_document.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -314,6 +315,87 @@ class _BaseEnvironmentInstallState extends State<BaseEnvironmentInstall>
                           color: (prefs.getBool('CUDA') ?? false)
                               ? Colors.blue
                               : Colors.red),
+                    ),
+                  ),
+                ),
+              ),
+              ListTile(
+                leading: CircleAvatar(
+                  backgroundImage: ExtendedNetworkImageProvider(
+                      'https://android-artworks.25pp.com/fs08/2021/01/06/10/110_31ee1d58453b39860d8c9a5eac670efb_con_130x130.png'),
+                ),
+                title: Text('一键使用加速'),
+                subtitle: Text(
+                    'Git Clone GitHub项目和Python安装依赖时候因网络原因可能会失败，启用该命令则可以实现一键加速'),
+                trailing: SizedBox(
+                  width: 96,
+                  child: MaterialButton(
+                    //背景颜色
+                    // color: Colors.white,
+                    //边框样式
+                    shape:  RoundedRectangleBorder(
+                      //边框颜色
+                      side: BorderSide(
+                        color:  (prefs.getBool('speed') ?? false)
+                            ? Colors.blue
+                            : Colors.red,
+                        width: 1,
+                      ),
+                      //边框圆角
+                      borderRadius: BorderRadius.all(
+                        Radius.circular(16),
+                      ),
+                    ),
+
+                    //点击事件
+                    onPressed: () {
+                      setState(()  {
+                        prefs.setBool(
+                            'speed', !(prefs.getBool('speed') ?? false));
+                        if((prefs.getBool('speed') ?? false)){
+                          //加速成功
+                          print("================================加速开启================================");
+                          MotionToast.success(
+                            title: const Text("代理加速"),
+                            description: Text("加速已开启"),
+                          ).show(context);
+                          Process.run('git', [
+                            'config',
+                            '--global',
+                            'url."https://kgithub.com/".insteadOf',
+                            '"https://github.com/"'
+                          ],runInShell: true);
+                          Process.run('pip', ['config', 'set', 'global.index-url', 'https://pypi.tuna.tsinghua.edu.cn/simple']).then((value) {
+                            print(value.stdout);
+                            print(value.stderr);
+                          });
+
+
+                        }else{
+                          print("================================加速关闭================================");
+                          MotionToast.success(
+                            title: const Text("代理加速"),
+                            description: Text("加速已关闭"),
+                          ).show(context);
+                          Process.run('git', [
+                            'config',
+                            '--global',
+                            '--unset',
+                            'url."https://kgithub.com/".insteadOf'
+                          ],runInShell: true);
+                        }
+
+                         Process.run('pip', ['config', 'unset', 'global.index-url']).then((value) {
+                           print(value.stdout);
+                           print(value.stderr);
+                        });
+                      });
+                    },
+                    child:  Text(
+                      (prefs.getBool('speed') ?? false) ? "开启中" : "已关闭",
+                      style: TextStyle(color:(prefs.getBool('speed') ?? false)
+                          ? Colors.blue
+                          : Colors.red),
                     ),
                   ),
                 ),

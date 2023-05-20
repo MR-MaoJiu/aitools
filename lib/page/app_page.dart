@@ -5,6 +5,7 @@ import 'package:aitools/page/run_page.dart';
 import 'package:extended_image/extended_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_sticky_header/flutter_sticky_header.dart';
+import 'package:open_document/open_document.dart';
 import 'package:process_run/process_run.dart';
 
 import '../main.dart';
@@ -22,14 +23,14 @@ class _AppPageState extends State<AppPage> {
   String appData = prefs.getString("app") ?? '';
   List dataList = [];
   // final controller = StreamController();
-  Shell shell = Shell(
-    workingDirectory:
-        Platform.environment['HOME'] ?? Platform.environment['USERPROFILE'],
-    environment: Platform.environment,
-    throwOnError: false,
-    stderrEncoding: const Utf8Codec(),
-    stdoutEncoding: const Utf8Codec(),
-  );
+  // Shell shell = Shell(
+  //   workingDirectory:
+  //       Platform.environment['HOME'] ?? Platform.environment['USERPROFILE'],
+  //   environment: Platform.environment,
+  //   throwOnError: false,
+  //   stderrEncoding: const Utf8Codec(),
+  //   stdoutEncoding: const Utf8Codec(),
+  // );
   getData() {
     if (appData.isNotEmpty) {
       appJson = json.decode(appData);
@@ -114,7 +115,10 @@ class _AppPageState extends State<AppPage> {
           ),
 
           //点击事件
-          onPressed: () {
+          onPressed: () async {
+
+
+
             Navigator.push(context, MaterialPageRoute(builder: (context) {
               return RunPage(app: _dataList[index]);
             }));
@@ -152,8 +156,8 @@ class _AppPageState extends State<AppPage> {
             //   print('============>${results.stdout}');
             // });
           },
-          child: const Text(
-            "去启动",
+          child:  Text(
+            (prefs.getBool("insealled_${_dataList[index]['name']}")??false)?"启动":"安装",
             style: TextStyle(color: Colors.blue),
           ),
         ),
